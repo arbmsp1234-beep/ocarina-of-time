@@ -1,0 +1,82 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ocarina of Time</title>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: #101510;
+      color: white;
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }
+
+    header {
+      padding: 18px;
+      background: #1b2b1b;
+      border-bottom: 2px solid #65844b;
+    }
+
+    h1 {
+      margin: 0;
+      color: #d6e8a5;
+      font-size: 25px;
+    }
+
+    p { color: #c6cfc0; }
+
+    #game {
+      width: 100%;
+      max-width: 960px;
+      aspect-ratio: 4 / 3;
+      margin: 20px auto;
+      background: black;
+      overflow: hidden;
+    }
+
+    #game canvas {
+      max-width: 100%;
+      max-height: 100%;
+    }
+
+    .note {
+      max-width: 650px;
+      margin: 20px auto;
+      padding: 0 16px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>The Legend of Zelda: Ocarina of Time</h1>
+    <p>Your personal browser game</p>
+  </header>
+
+  <div id="game"></div>
+
+  <div class="note">
+    <p>Loading emulator…</p>
+    <p>Use your legally obtained game file when prompted or configure its URL below.</p>
+  </div>
+
+  <script>
+    EJS_player = "#game";
+    EJS_core = "n64";
+    EJS_gameName = "The Legend of Zelda: Ocarina of Time";
+    EJS_pathtodata = "https://cdn.emulatorjs.org/latest/data/";
+    EJS_startOnLoaded = true;
+
+    // We'll configure your game file in the next step.
+  </script>
+
+  <script src="https://cdn.emulatorjs.org/latest/data/loader.js"></script>
+</body>
+</html>
