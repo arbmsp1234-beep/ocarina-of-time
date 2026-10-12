@@ -12,12 +12,57 @@
     }
 
     html, body {
+      margin: 0;
       width: 100%;
       height: 100%;
-      margin: 0;
-      padding: 0;
       overflow: hidden;
       background: #000;
+      color: white;
+      font-family: Arial, sans-serif;
+    }
+
+    #uploadScreen {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      padding: 24px;
+      background: #000;
+      text-align: center;
+    }
+
+    #uploadScreen h1 {
+      margin: 0;
+      font-size: 26px;
+    }
+
+    #uploadScreen p {
+      color: #bbb;
+      margin: 0;
+    }
+
+    #romFile {
+      display: none;
+    }
+
+    #uploadButton {
+      display: inline-block;
+      padding: 14px 24px;
+      background: #fff;
+      color: #000;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    #uploadButton:hover {
+      background: #ddd;
     }
 
     #game {
@@ -34,28 +79,61 @@
       max-width: 100%;
       max-height: 100%;
     }
+
+    #uploadScreen.hidden {
+      display: none;
+    }
   </style>
 </head>
 
 <body>
+  <div id="uploadScreen">
+    <h1>Ocarina of Time</h1>
+    <p>Select your legally obtained N64 ROM file to play.</p>
+
+    <label id="uploadButton" for="romFile">
+      Upload ROM File
+    </label>
+
+    <input
+      type="file"
+      id="romFile"
+      accept=".z64,.n64,.v64"
+    />
+  </div>
+
   <div id="game"></div>
 
   <script>
+    const fileInput = document.getElementById("romFile");
+    const uploadScreen = document.getElementById("uploadScreen");
+
     window.EJS_player = "#game";
     window.EJS_core = "n64";
     window.EJS_gameName = "The Legend of Zelda: Ocarina of Time";
-
     window.EJS_pathtodata =
       "https://cdn.emulatorjs.org/latest/data/";
 
     window.EJS_startOnLoaded = true;
 
-    // Let EmulatorJS ask you to select your ROM file.
-    window.EJS_gameUrl = "";
+    fileInput.addEventListener("change", function () {
+      const file = fileInput.files[0];
 
-    const loader = document.createElement("script");
-    loader.src = window.EJS_pathtodata + "loader.js";
-    document.body.appendChild(loader);
+      if (!file) return;
+
+      window.EJS_gameUrl = URL.createObjectURL(file);
+      uploadScreen.classList.add("hidden");
+
+      const loader = document.createElement("script");
+      loader.src = window.EJS_pathtodata + "loader.js";
+
+      loader.onerror = function () {
+        uploadScreen.classList.remove("hidden");
+        alert("EmulatorJS failed to load. Check your internet connection and try again.");
+      };
+
+      document.body.appendChild(loader);
+    });
   </script>
 </body>
 </html>
