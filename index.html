@@ -7,86 +7,42 @@
   <title>Ocarina of Time | Game Terminal</title>
 
   <style>
-    * {
-      box-sizing: border-box;
-    }
-
     body {
       margin: 0;
-      background: #0b100d;
-      color: #ffffff;
+      background: #101510;
+      color: white;
       font-family: Arial, sans-serif;
       text-align: center;
     }
 
     header {
-      padding: 22px 12px;
-      background: linear-gradient(135deg, #17291b, #263d25);
-      border-bottom: 2px solid #759653;
+      padding: 20px;
+      background: #1b2b1b;
+      border-bottom: 2px solid #65844b;
     }
 
     h1 {
-      margin: 0;
-      color: #d9edb6;
-      font-size: clamp(20px, 4vw, 30px);
-    }
-
-    header p {
-      margin: 8px 0 0;
-      color: #c0d0b7;
-      font-size: 14px;
-    }
-
-    main {
-      width: 100%;
-      max-width: 1000px;
-      margin: 0 auto;
-      padding: 16px;
+      color: #d6e8a5;
+      font-size: 24px;
     }
 
     #status {
       padding: 12px;
-      color: #d9edb6;
-      font-size: 14px;
+      color: #d6e8a5;
     }
 
     #game {
-      position: relative;
-      width: 100%;
+      width: 95%;
+      max-width: 960px;
       aspect-ratio: 4 / 3;
-      min-height: 240px;
-      max-height: 75vh;
-      margin: 0 auto;
+      margin: 15px auto;
+      background: black;
       overflow: hidden;
-      background: #000;
-      border: 1px solid #405641;
-      border-radius: 8px;
     }
 
     #game canvas {
       max-width: 100%;
       max-height: 100%;
-    }
-
-    .info {
-      margin-top: 16px;
-      padding: 14px;
-      background: #151d17;
-      border: 1px solid #304333;
-      border-radius: 8px;
-      color: #c6d0c5;
-      font-size: 13px;
-      line-height: 1.6;
-    }
-
-    a {
-      color: #c7e89a;
-    }
-
-    footer {
-      padding: 20px;
-      color: #738174;
-      font-size: 12px;
     }
   </style>
 </head>
@@ -97,71 +53,36 @@
     <p>GAME TERMINAL</p>
   </header>
 
-  <main>
-    <div id="status" role="status">
-      Initializing emulator…
-    </div>
-
-    <div id="game"></div>
-
-    <div class="info">
-      <strong>Having trouble loading?</strong><br>
-      The emulator and game file must both be accessible.
-      Google Drive may prevent the emulator from retrieving the ROM.
-      If loading fails, we'll troubleshoot the file connection.
-    </div>
-  </main>
-
-  <footer>
-    Personal browser gaming page
-  </footer>
+  <div id="status">Loading emulator…</div>
+  <div id="game"></div>
 
   <script>
-    const statusBox = document.getElementById("status");
-
-    function showStatus(message) {
-      statusBox.textContent = message;
-    }
-
-    window.addEventListener("error", function (event) {
-      console.error("Page error:", event.message);
-    });
-
-    window.addEventListener("unhandledrejection", function (event) {
-      console.error("Emulator error:", event.reason);
-      showStatus(
-        "An emulator loading error occurred. Check the browser console."
-      );
-    });
-
-    // EmulatorJS configuration
     var EJS_player = "#game";
     var EJS_core = "n64";
     var EJS_gameName = "The Legend of Zelda: Ocarina of Time";
+
     var EJS_pathtodata =
-      "https://cdn.emulatorjs.org/latest/data/";
+      "https://cdn.emulatorjs.org/stable/data/";
 
     var EJS_gameUrl =
       "https://drive.google.com/uc?export=download&id=1c-i9r8wbvB7RXv0--XlGTGo3xKbmchbV";
 
     var EJS_startOnLoaded = true;
 
-    showStatus("Loading EmulatorJS…");
+    var script = document.createElement("script");
+    script.src = EJS_pathtodata + "loader.js";
 
-    var loader = document.createElement("script");
-    loader.src = EJS_pathtodata + "loader.js";
-
-    loader.onload = function () {
-      showStatus("Emulator loaded. Attempting to load your game…");
+    script.onload = function () {
+      document.getElementById("status").textContent =
+        "Emulator loader downloaded. Starting game…";
     };
 
-    loader.onerror = function () {
-      showStatus(
-        "Could not download the emulator loader. Check your connection."
-      );
+    script.onerror = function () {
+      document.getElementById("status").textContent =
+        "ERROR: Emulator loader could not be downloaded.";
     };
 
-    document.body.appendChild(loader);
+    document.body.appendChild(script);
   </script>
 </body>
 </html>
