@@ -7,6 +7,8 @@
   <title>Ocarina of Time | Game Terminal</title>
 
   <style>
+    * { box-sizing: border-box; }
+
     body {
       margin: 0;
       background: #101510;
@@ -16,26 +18,44 @@
     }
 
     header {
-      padding: 20px;
+      padding: 22px 12px;
       background: #1b2b1b;
       border-bottom: 2px solid #65844b;
     }
 
     h1 {
       color: #d6e8a5;
-      font-size: 24px;
+      font-size: clamp(20px, 4vw, 28px);
+      margin: 0;
+    }
+
+    #setup {
+      padding: 24px 12px;
+    }
+
+    #choose {
+      display: inline-block;
+      padding: 13px 20px;
+      background: #668747;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      border: 0;
+      border-radius: 7px;
+      cursor: pointer;
     }
 
     #status {
-      padding: 12px;
+      margin: 16px;
       color: #d6e8a5;
+      overflow-wrap: anywhere;
     }
 
     #game {
-      width: 95%;
+      width: 96%;
       max-width: 960px;
       aspect-ratio: 4 / 3;
-      margin: 15px auto;
+      margin: 0 auto 20px;
       background: black;
       overflow: hidden;
     }
@@ -43,6 +63,13 @@
     #game canvas {
       max-width: 100%;
       max-height: 100%;
+    }
+
+    .note {
+      padding: 0 18px 24px;
+      color: #bbc6b9;
+      font-size: 13px;
+      line-height: 1.6;
     }
   </style>
 </head>
@@ -53,36 +80,100 @@
     <p>GAME TERMINAL</p>
   </header>
 
-  <div id="status">Loading emulator…</div>
+  <section id="setup">
+    <p>Select your legally obtained Nintendo 64 game file.</p>
+
+    <input
+      id="rom"
+      type="file"
+      accept=".z64,.n64,.v64"
+      hidden
+    >
+
+    <button id="choose" type="button">
+      Choose ROM File
+    </button>
+
+    <div id="status" role="status">
+      Waiting for your game file.
+    </div>
+  </section>
+
   <div id="game"></div>
 
+  <div class="note">
+    Your ROM is loaded from your own device and is not uploaded
+    to this website. The emulator itself loads from the EmulatorJS CDN.
+  </div>
+
   <script>
-    var EJS_player = "#game";
-    var EJS_core = "n64";
-    var EJS_gameName = "The Legend of Zelda: Ocarina of Time";
+    const romInput = document.getElementById("rom");
+    const chooseButton = document.getElementById("choose");
+    const statusBox = document.getElementById("status");
 
-    var EJS_pathtodata =
-      "https://cdn.emulatorjs.org/stable/data/";
+    let started = false;
 
-    var EJS_gameUrl =
-      "https://drive.google.com/uc?export=download&id=1c-i9r8wbvB7RXv0--XlGTGo3xKbmchbV";
+    chooseButton.addEventListener("click", function () {
+      romInput.click();
+    });
 
-    var EJS_startOnLoaded = true;
+    romInput.addEventListener("change", function () {
+      const file = romInput.files[0];
 
-    var script = document.createElement("script");
-    script.src = EJS_pathtodata + "loader.js";
+      if (!file) return;
 
-    script.onload = function () {
-      document.getElementById("status").textContent =
-        "Emulator loader downloaded. Starting game…";
-    };
+      if (started) {
+        statusBox.textContent =
+          "Refresh the page to choose a different game file.";
+        return;
+      }
 
-    script.onerror = function () {
-      document.getElementById("status").textContent =
-        "ERROR: Emulator loader could not be downloaded.";
-    };
+      const validName = /\.(z64|n64|v64)$/i.test(file.name);
 
-    document.body.appendChild(script);
+      if (!validName) {
+        statusBox.textContent =
+          "Please select a .z64, .n64, or .v64 game file.";
+        return;
+      }
+
+      started = true;
+      chooseButton.disabled = true;
+      chooseButton.textContent = "Loading Game…";
+
+      statusBox.textContent =
+        "Loading " + file.name + "…";
+
+      // Create a local browser URL for the selected file.
+      const localRomUrl = URL.createObjectURL(file);
+
+      window.EJS_player = "#game";
+      window.EJS_core = "n64";
+      window.EJS_gameName =
+        "The Legend of Zelda: Ocarina of Time";
+      window.EJS_gameUrl = localRomUrl;
+      window.EJS_pathtodata =
+        "https://cdn.emulatorjs.org/latest/data/";
+      window.EJS_startOnLoaded = true;
+
+      const loader = document.createElement("script");
+      loader.src = window.EJS_pathtodata + "loader.js";
+
+      loader.onload = function () {
+        statusBox.textContent =
+          "Emulator loaded. Preparing your game…";
+      };
+
+      loader.onerror = function () {
+        statusBox.textContent =
+          "Could not load EmulatorJS. Try opening this page in Safari.";
+        chooseButton.disabled = false;
+        chooseButton.textContent = "Choose ROM File";
+        started = false;
+        URL.revokeObjectURL(localRomUrl);
+      };
+
+      document.body.appendChild(loader);
+    });
   </script>
 </body>
 </html>
