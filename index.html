@@ -4,40 +4,63 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Ocarina of Time</title>
+  <title>Ocarina of Time | Game Terminal</title>
 
   <style>
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
     body {
       margin: 0;
-      background: #101510;
-      color: white;
+      background: #0b100d;
+      color: #ffffff;
       font-family: Arial, sans-serif;
       text-align: center;
     }
 
     header {
-      padding: 18px;
-      background: #1b2b1b;
-      border-bottom: 2px solid #65844b;
+      padding: 22px 12px;
+      background: linear-gradient(135deg, #17291b, #263d25);
+      border-bottom: 2px solid #759653;
     }
 
     h1 {
       margin: 0;
-      color: #d6e8a5;
-      font-size: 25px;
+      color: #d9edb6;
+      font-size: clamp(20px, 4vw, 30px);
     }
 
-    p { color: #c6cfc0; }
+    header p {
+      margin: 8px 0 0;
+      color: #c0d0b7;
+      font-size: 14px;
+    }
+
+    main {
+      width: 100%;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    #status {
+      padding: 12px;
+      color: #d9edb6;
+      font-size: 14px;
+    }
 
     #game {
+      position: relative;
       width: 100%;
-      max-width: 960px;
       aspect-ratio: 4 / 3;
-      margin: 20px auto;
-      background: black;
+      min-height: 240px;
+      max-height: 75vh;
+      margin: 0 auto;
       overflow: hidden;
+      background: #000;
+      border: 1px solid #405641;
+      border-radius: 8px;
     }
 
     #game canvas {
@@ -45,11 +68,25 @@
       max-height: 100%;
     }
 
-    .note {
-      max-width: 650px;
-      margin: 20px auto;
-      padding: 0 16px;
-      font-size: 14px;
+    .info {
+      margin-top: 16px;
+      padding: 14px;
+      background: #151d17;
+      border: 1px solid #304333;
+      border-radius: 8px;
+      color: #c6d0c5;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    a {
+      color: #c7e89a;
+    }
+
+    footer {
+      padding: 20px;
+      color: #738174;
+      font-size: 12px;
     }
   </style>
 </head>
@@ -57,26 +94,74 @@
 <body>
   <header>
     <h1>The Legend of Zelda: Ocarina of Time</h1>
-    <p>Your personal browser game</p>
+    <p>GAME TERMINAL</p>
   </header>
 
-  <div id="game"></div>
+  <main>
+    <div id="status" role="status">
+      Initializing emulator…
+    </div>
 
-  <div class="note">
-    <p>Loading emulator…</p>
-    <p>Use your legally obtained game file when prompted or configure its URL below.</p>
-  </div>
+    <div id="game"></div>
+
+    <div class="info">
+      <strong>Having trouble loading?</strong><br>
+      The emulator and game file must both be accessible.
+      Google Drive may prevent the emulator from retrieving the ROM.
+      If loading fails, we'll troubleshoot the file connection.
+    </div>
+  </main>
+
+  <footer>
+    Personal browser gaming page
+  </footer>
 
   <script>
-    EJS_player = "#game";
-    EJS_core = "n64";
-    EJS_gameName = "The Legend of Zelda: Ocarina of Time";
-    EJS_pathtodata = "https://cdn.emulatorjs.org/latest/data/";
-    EJS_startOnLoaded = true;
+    const statusBox = document.getElementById("status");
 
-    // We'll configure your game file in the next step.
+    function showStatus(message) {
+      statusBox.textContent = message;
+    }
+
+    window.addEventListener("error", function (event) {
+      console.error("Page error:", event.message);
+    });
+
+    window.addEventListener("unhandledrejection", function (event) {
+      console.error("Emulator error:", event.reason);
+      showStatus(
+        "An emulator loading error occurred. Check the browser console."
+      );
+    });
+
+    // EmulatorJS configuration
+    var EJS_player = "#game";
+    var EJS_core = "n64";
+    var EJS_gameName = "The Legend of Zelda: Ocarina of Time";
+    var EJS_pathtodata =
+      "https://cdn.emulatorjs.org/latest/data/";
+
+    var EJS_gameUrl =
+      "https://drive.google.com/uc?export=download&id=1c-i9r8wbvB7RXv0--XlGTGo3xKbmchbV";
+
+    var EJS_startOnLoaded = true;
+
+    showStatus("Loading EmulatorJS…");
+
+    var loader = document.createElement("script");
+    loader.src = EJS_pathtodata + "loader.js";
+
+    loader.onload = function () {
+      showStatus("Emulator loaded. Attempting to load your game…");
+    };
+
+    loader.onerror = function () {
+      showStatus(
+        "Could not download the emulator loader. Check your connection."
+      );
+    };
+
+    document.body.appendChild(loader);
   </script>
-
-  <script src="https://cdn.emulatorjs.org/latest/data/loader.js"></script>
 </body>
 </html>
